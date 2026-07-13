@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 
-from slsdk import Application
+from slsdk.bootstrap.application import Application
 from slsdk.logging.logger import get_logger
 
 logger = get_logger(__name__)
@@ -29,9 +29,12 @@ def main() -> int:
         event_id,
     )
 
+    application = Application()
+
     try:
-        application = Application()
-        application.run_event_ticket_workflow(event_id)
+        result = application.run_event_ticket_workflow(
+            event_id=event_id,
+        )
     except Exception:
         logger.exception(
             "SLSDK execution failed: event_id=%s",
@@ -40,8 +43,10 @@ def main() -> int:
         return 1
 
     logger.info(
-        "SLSDK execution completed successfully: event_id=%s",
+        "SLSDK execution completed successfully: "
+        "event_id=%s result=%s",
         event_id,
+        result,
     )
 
     return 0
