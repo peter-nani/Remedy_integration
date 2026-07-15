@@ -78,64 +78,16 @@ logger.addHandler(
 )
 
 def get_create_event_id():
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        None.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     return str(int(event_id) * -1)
 
 
 def get_update_event_id():
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        None.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     if int(event_id) >= 12632565:
         return str(int(event_id) * -1)
 
     return str(event_id)
 
 def build_create_user_notes():
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        None.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     user_notes = str(
         EM7_VALUES["%_user_note"]
     )
@@ -157,22 +109,6 @@ def build_create_user_notes():
     )
 
 def build_create_base_payload():
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        None.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     return {
         "resource_name": str(
             EM7_VALUES["%X"]
@@ -220,22 +156,6 @@ def build_create_base_payload():
 def add_create_source_fields(
     event_details,
 ):
-    """
-
-    This helper enriches the current payload dictionary with the values needed by the downstream Remedy workflow.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated payload dictionary.
-
-    Side Effects:
-        Modifies the supplied payload dictionary.
-
-    Failure Behaviour:
-        Missing values are handled by the existing implementation and stored as empty strings when appropriate.
-    """
     event_details.update(
         {
             "source": str(
@@ -255,22 +175,6 @@ def add_create_source_fields(
 def add_create_event_fields(
     event_details,
 ):
-    """
-
-    This helper enriches the current payload dictionary with the values needed by the downstream Remedy workflow.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated payload dictionary.
-
-    Side Effects:
-        Modifies the supplied payload dictionary.
-
-    Failure Behaviour:
-        Missing values are handled by the existing implementation and stored as empty strings when appropriate.
-    """
     event_details.update(
         {
             "message": clean_ascii(
@@ -303,22 +207,6 @@ def add_create_event_fields(
 def add_create_metric_fields(
     event_details,
 ):
-    """
-
-    This helper enriches the current payload dictionary with the values needed by the downstream Remedy workflow.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated payload dictionary.
-
-    Side Effects:
-        Modifies the supplied payload dictionary.
-
-    Failure Behaviour:
-        Missing values are handled by the existing implementation and stored as empty strings when appropriate.
-    """
     event_details.update(
         {
             "msg_val": "",
@@ -336,22 +224,6 @@ def add_create_metric_fields(
 def add_create_relationship_fields(
     event_details,
 ):
-    """
-
-    This helper enriches the current payload dictionary with the values needed by the downstream Remedy workflow.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated payload dictionary.
-
-    Side Effects:
-        Modifies the supplied payload dictionary.
-
-    Failure Behaviour:
-        Missing values are handled by the existing implementation and stored as empty strings when appropriate.
-    """
     event_details.update(
         {
             "device_parent": str(
@@ -369,22 +241,6 @@ def add_create_relationship_fields(
 def add_create_empty_fields(
     event_details,
 ):
-    """
-
-    This helper enriches the current payload dictionary with the values needed by the downstream Remedy workflow.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated payload dictionary.
-
-    Side Effects:
-        Modifies the supplied payload dictionary.
-
-    Failure Behaviour:
-        Missing values are handled by the existing implementation and stored as empty strings when appropriate.
-    """
     event_details.update(
         {
             "org_city": "",
@@ -403,22 +259,6 @@ def add_create_empty_fields(
 def add_create_application_type(
     event_details,
 ):
-    """
-
-    This helper enriches the current payload dictionary with the values needed by the downstream Remedy workflow.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated payload dictionary.
-
-    Side Effects:
-        Modifies the supplied payload dictionary.
-
-    Failure Behaviour:
-        Missing values are handled by the existing implementation and stored as empty strings when appropriate.
-    """
     event_details["application_type"] = (
         get_application_type(
             EM7_VALUES["%n"]
@@ -428,22 +268,6 @@ def add_create_application_type(
     return event_details
 
 def build_create_payload():
-    """
-
-    This function starts from the base create payload and enriches it with source, event, metric, relationship, and application-type information from the current SL1 event. The resulting dictionary is passed to Remedy when the event is ticketable.
-
-    Args:
-        None.
-
-    Returns:
-        A dictionary payload ready to be sent to the Remedy create operation.
-
-    Side Effects:
-        Logs the final payload and uses the current EM7 event values from the Run Book Automation context.
-
-    Failure Behaviour:
-        If required values are missing, the function still returns the best available payload and relies on the existing implementation to handle the missing data.
-    """
     event_details = (
         build_create_base_payload()
     )
@@ -494,22 +318,6 @@ def build_create_payload():
     return event_details
 
 def build_update_base_payload():
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        None.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     return {
         "EID": get_update_event_id(),
         "severity": str(
@@ -545,22 +353,6 @@ def build_update_base_payload():
     }
 
 def can_update_cleared_incident():
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        None.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     if not has_incident_number(
         EM7_VALUES["%_ext_ticket_ref"]
     ):
@@ -581,22 +373,6 @@ def can_update_cleared_incident():
 def build_clear_ticket_payload(
     updated_event_details,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        updated_event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     if not can_update_cleared_incident():
         return False
 
@@ -613,22 +389,6 @@ def build_clear_ticket_payload(
     return updated_event_details
 
 def is_event_recently_modified():
-    """
-
-    This helper evaluates the current event state and returns a simple boolean result used by the surrounding workflow.
-
-    Args:
-        None.
-
-    Returns:
-        True when the condition is met, otherwise False.
-
-    Side Effects:
-        None.
-
-    Failure Behaviour:
-        The function uses the existing implementation and does not add extra exception handling.
-    """
     logger.info(
         "[EID:%s]: Checking if the event "
         "updated in last:%s sec. "
@@ -655,22 +415,6 @@ def is_event_recently_modified():
 def build_modified_event_payload(
     updated_event_details,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        updated_event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     if not is_event_recently_modified():
         logger.info(
             "[EID:%s]: Event did not "
@@ -716,22 +460,6 @@ def build_modified_event_payload(
     return updated_event_details
 
 def build_update_payload():
-    """
-
-    This function decides whether the current event should update an existing incident by clearing it or by sending a normal update payload based on the automation policy and the event state.
-
-    Args:
-        None.
-
-    Returns:
-        A dictionary update payload when the event should be updated, otherwise False.
-
-    Side Effects:
-        Calls the clear and modified-event payload builders and writes log messages.
-
-    Failure Behaviour:
-        If the event is not eligible for update, the function returns False and the workflow skips the Remedy update call.
-    """
     updated_event_details = (
         build_update_base_payload()
     )
@@ -750,22 +478,6 @@ def build_update_payload():
 def acknowledge_non_ticketable(
     reason,
 ):
-    """
-
-    This helper performs the update or outbound action required by the current event-processing workflow.
-
-    Args:
-        reason: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The result returned by the underlying operation.
-
-    Side Effects:
-        May update the SL1 event, call an API, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the appropriate result when the action cannot complete.
-    """
     stats["ext_ticket_ref"] = reason
 
     update_event_sql = (
@@ -811,22 +523,6 @@ def acknowledge_non_ticketable(
 def acknowledge_non_ticketable(
     reason,
 ):
-    """
-
-    This helper performs the update or outbound action required by the current event-processing workflow.
-
-    Args:
-        reason: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The result returned by the underlying operation.
-
-    Side Effects:
-        May update the SL1 event, call an API, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the appropriate result when the action cannot complete.
-    """
     stats["ext_ticket_ref"] = reason
 
     update_event_sql = (
@@ -870,22 +566,6 @@ def acknowledge_non_ticketable(
         )
 
 def is_cdb_ticket_event():
-    """
-
-    This helper evaluates the current event state and returns a simple boolean result used by the surrounding workflow.
-
-    Args:
-        None.
-
-    Returns:
-        True when the condition is met, otherwise False.
-
-    Side Effects:
-        None.
-
-    Failure Behaviour:
-        The function uses the existing implementation and does not add extra exception handling.
-    """
     event_policy_ids = (
         ep_create_ticket_SLDB
         .strip("][")
@@ -897,22 +577,6 @@ def is_cdb_ticket_event():
     ) in event_policy_ids
 
 def is_cdb_ticket_event():
-    """
-
-    This helper evaluates the current event state and returns a simple boolean result used by the surrounding workflow.
-
-    Args:
-        None.
-
-    Returns:
-        True when the condition is met, otherwise False.
-
-    Side Effects:
-        None.
-
-    Failure Behaviour:
-        The function uses the existing implementation and does not add extra exception handling.
-    """
     event_policy_ids = (
         ep_create_ticket_SLDB
         .strip("][")
@@ -926,22 +590,6 @@ def is_cdb_ticket_event():
 def handle_cdb_collection_disabled(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: Collection objects "
         "disabled events Handling",
@@ -990,22 +638,6 @@ def handle_cdb_collection_disabled(
     return event_details
 
 def get_interface_details():
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        None.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     interface_id = EM7_VALUES["%y"]
 
     if str(interface_id) != "0":
@@ -1045,22 +677,6 @@ def get_interface_details():
 def get_interface_tags(
     interface_id,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        interface_id: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     sql = (
         "SELECT tag_name "
         "FROM master_dev."
@@ -1084,22 +700,6 @@ def get_interface_tags(
 def get_interface_description(
     interface_id,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        interface_id: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     sql = (
         "SELECT if_id, ifDescr "
         "FROM master_dev.device_interfaces "
@@ -1129,22 +729,6 @@ def get_interface_description(
 def handle_interface_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: Interfaces Events Handling",
         event_id,
@@ -1211,22 +795,6 @@ def handle_interface_scenario(
     return event_details
 
 def get_root_device_ip():
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        None.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     sql = (
         "SELECT ld.ip "
         "FROM master_dev.legend_device ld "
@@ -1245,23 +813,6 @@ def handle_root_component(
     event_details,
     application_type=None,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-        application_type: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     event_details["device_ip"] = (
         get_root_device_ip()
     )
@@ -1284,22 +835,6 @@ def handle_root_component(
 def handle_sql_database_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: SQL Server Database "
         "Events Handling",
@@ -1359,22 +894,6 @@ def handle_sql_database_scenario(
 def handle_sql_instance_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: SQL Server Instance "
         "Events Handling",
@@ -1425,22 +944,6 @@ def handle_sql_instance_scenario(
 def handle_sql_server_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: SQL Server Events Handling",
         event_id,
@@ -1517,22 +1020,6 @@ def handle_sql_server_scenario(
 def handle_mysql_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: Mysql Component "
         "events Handling",
@@ -1552,22 +1039,6 @@ def handle_mysql_scenario(
 def handle_cluster_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: Windows Cluster "
         "components events Handling",
@@ -1593,22 +1064,6 @@ def handle_cluster_scenario(
 def handle_ssl_certificate_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: SSL Certificate expiry "
         "Event Handling",
@@ -1643,22 +1098,6 @@ def handle_ssl_certificate_scenario(
 def handle_vesta_forward_trap(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: Vesta "
         "ExternalActivityForwardTrap Handling",
@@ -1715,22 +1154,6 @@ def handle_vesta_forward_trap(
 def handle_vesta_msci_trap(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: "
         "vstExternalActivityMSCITrap Handling",
@@ -1787,22 +1210,6 @@ def handle_vesta_msci_trap(
 def handle_ilo_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: ILO Events Handling",
         event_id,
@@ -1832,22 +1239,6 @@ def handle_ilo_scenario(
 def handle_oob_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: OOB Events Handling",
         event_id,
@@ -1877,22 +1268,6 @@ def handle_oob_scenario(
 def handle_netapp_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: NetApp Events Handling",
         event_id,
@@ -1934,22 +1309,6 @@ def handle_netapp_scenario(
 def handle_rackarmor_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: RackArmor Camera Handling",
         event_id,
@@ -1981,22 +1340,6 @@ def handle_rackarmor_scenario(
 def handle_rackarmor_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: RackArmor Camera Handling",
         event_id,
@@ -2028,22 +1371,6 @@ def handle_rackarmor_scenario(
 def handle_vmax_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: Dell EMC Vmax "
         "events handling",
@@ -2075,22 +1402,6 @@ def handle_vmax_scenario(
 def handle_qradar_scenario(
     event_details,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        event_details: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: QRadar Events Handling",
         event_id,
@@ -2149,22 +1460,6 @@ def handle_qradar_scenario(
 def scenarios_handling(
     event_details,
 ):
-    """
-
-    This function evaluates the current SL1 event against the special-case rules in the integration and returns a payload that reflects the correct scenario handling. It acts as the central orchestration point for several scenario-specific transformations.
-
-    Args:
-        event_details: The mutable payload dictionary built for ticket creation.
-
-    Returns:
-        The updated payload dictionary when the event should continue through ticket creation, otherwise False.
-
-    Side Effects:
-        Calls many scenario handlers, may update the global stats and acknowledgement state, and writes log messages.
-
-    Failure Behaviour:
-        Any unexpected exception is logged and the function returns False so the workflow stops ticket creation for the current event.
-    """
     try:
         logger.info(
             "[EID:%s]: Entered into "
@@ -2359,22 +1654,6 @@ def scenarios_handling(
 def get_credential(
     credential_id,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        credential_id: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     logger.debug(
         "[EID:%s]: Loading credential ID: %s",
         event_id,
@@ -2398,22 +1677,6 @@ def get_credential(
 def get_credential_details(
     credential,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        credential: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     url = credential.get("curl_url")
     username = credential.get("cred_user")
     password = credential.get("cred_pwd")
@@ -2439,23 +1702,6 @@ def build_sl_api_url(
     sl_url,
     end_point,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        sl_url: The value supplied to this function by the current integration workflow.
-        end_point: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     return (
         str(sl_url).rstrip("/")
         + "/api/"
@@ -2466,23 +1712,6 @@ def call_sl_api(
     end_point,
     data,
 ):
-    """
-
-    This function resolves the SL1 credentials, builds the request URL, and posts the supplied JSON payload to the requested SL1 endpoint. It is used for event updates, alert creation, and other SL1-side actions.
-
-    Args:
-        end_point: The SL1 API endpoint path to call.
-        data: The request payload to send to the SL1 API.
-
-    Returns:
-        The HTTP response object from the SL1 API call, or None when an exception occurs.
-
-    Side Effects:
-        Calls the SL1 REST API, writes log messages, and uses the current event context.
-
-    Failure Behaviour:
-        Any exception is logged and the function returns None.
-    """
     try:
         logger.info(
             "[EID:%s]: Calling SL1 API "
@@ -2547,22 +1776,6 @@ def call_sl_api(
         return None
     
 def disable_soap_ssl_verification():
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        None.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     if hasattr(
         ssl,
         "_create_unverified_context",
@@ -2574,22 +1787,6 @@ def disable_soap_ssl_verification():
 def create_remedy_client(
     remedy_ticket_url,
 ):
-    """
-
-    This helper triggers the service or API interaction needed to move the SL1 to Remedy workflow forward.
-
-    Args:
-        remedy_ticket_url: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The result returned by the downstream operation.
-
-    Side Effects:
-        May call an API, a web service, or the SL1 database depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     logger.info(
         "[EID:%s]: Creating Remedy "
         "SOAP client",
@@ -2606,24 +1803,6 @@ def create_remedy_authentication(
     remedy_username,
     remedy_password,
 ):
-    """
-
-    This helper triggers the service or API interaction needed to move the SL1 to Remedy workflow forward.
-
-    Args:
-        remedy_operations: The value supplied to this function by the current integration workflow.
-        remedy_username: The value supplied to this function by the current integration workflow.
-        remedy_password: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The result returned by the downstream operation.
-
-    Side Effects:
-        May call an API, a web service, or the SL1 database depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     remedy_auth = (
         remedy_operations.factory.create(
             "AuthenticationInfo"
@@ -2644,23 +1823,6 @@ def configure_remedy_client(
     remedy_operations,
     remedy_auth,
 ):
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        remedy_operations: The value supplied to this function by the current integration workflow.
-        remedy_auth: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     remedy_operations.set_options(
         soapheaders=(
             remedy_auth
@@ -2670,22 +1832,6 @@ def configure_remedy_client(
     return remedy_operations
 
 def call_remedy_web_service():
-    """
-
-    This function loads the Remedy credentials, disables SSL verification, creates the SOAP client, and configures authentication so the integration can call the Remedy create or update operations.
-
-    Args:
-        None.
-
-    Returns:
-        The configured Remedy SOAP client object, or None when initialisation fails.
-
-    Side Effects:
-        Updates the global stats dictionary, writes log entries, and creates the SOAP client.
-
-    Failure Behaviour:
-        Any exception is logged and the function returns None.
-    """
     try:
         logger.info(
             "[EID:%s]: Initialising Remedy "
@@ -2754,22 +1900,6 @@ def call_remedy_web_service():
 def create_remedy_ticket(
     create_payload,
 ):
-    """
-
-    This function initialises the Remedy SOAP client and sends the create payload to the Remedy Create_Operation. The response is used by the rest of the workflow to update the SL1 event.
-
-    Args:
-        create_payload: The payload dictionary prepared for the Remedy create call.
-
-    Returns:
-        The Remedy response object from the create operation.
-
-    Side Effects:
-        Calls the Remedy SOAP web service, updates the global stats dictionary, and writes log messages.
-
-    Failure Behaviour:
-        If the SOAP client cannot be initialised, the function raises a RuntimeError.
-    """
     remedy_client = (
         call_remedy_web_service()
     )
@@ -2810,22 +1940,6 @@ def create_remedy_ticket(
 def update_remedy_ticket(
     update_payload,
 ):
-    """
-
-    This function initialises the Remedy SOAP client and sends the update payload to the Remedy Modify_Operation or Update_Operation depending on the implementation path in the current code. The response is inspected to determine whether the ticket update succeeded.
-
-    Args:
-        update_payload: The payload dictionary prepared for the Remedy update call.
-
-    Returns:
-        The Remedy response object from the update operation.
-
-    Side Effects:
-        Calls the Remedy SOAP web service, updates the global stats dictionary, and writes log messages.
-
-    Failure Behaviour:
-        If the SOAP client cannot be initialised, the function raises a RuntimeError.
-    """
     remedy_client = (
         call_remedy_web_service()
     )
@@ -2866,22 +1980,6 @@ def update_remedy_ticket(
 def update_remedy_ticket(
     update_payload,
 ):
-    """
-
-    This function initialises the Remedy SOAP client and sends the update payload to the Remedy Modify_Operation or Update_Operation depending on the implementation path in the current code. The response is inspected to determine whether the ticket update succeeded.
-
-    Args:
-        update_payload: The payload dictionary prepared for the Remedy update call.
-
-    Returns:
-        The Remedy response object from the update operation.
-
-    Side Effects:
-        Calls the Remedy SOAP web service, updates the global stats dictionary, and writes log messages.
-
-    Failure Behaviour:
-        If the SOAP client cannot be initialised, the function raises a RuntimeError.
-    """
     remedy_client = call_remedy_web_service()
 
     if remedy_client is None:
@@ -2920,24 +2018,6 @@ def get_remedy_response_value(
     field_name,
     default_value,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        remedy_response: The value supplied to this function by the current integration workflow.
-        field_name: The value supplied to this function by the current integration workflow.
-        default_value: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     if field_name not in str(
         remedy_response
     ):
@@ -2957,22 +2037,6 @@ def get_remedy_response_value(
 def build_incident_event_data(
     remedy_response,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        remedy_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     event_ext_ticket_ref = str(
         remedy_response.ext_ticket_ref
     )
@@ -3022,22 +2086,6 @@ def build_incident_event_data(
 def build_non_ticketable_response_data(
     remedy_response,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        remedy_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     return {
         "user_ack": (
             "/api/account/"
@@ -3052,22 +2100,6 @@ def build_non_ticketable_response_data(
 def build_incident_app_failure_data(
     remedy_response,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        remedy_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     event_ext_ticket_ref = str(
         remedy_response.ext_ticket_ref
     )
@@ -3112,22 +2144,6 @@ def build_incident_app_failure_data(
     }
 
 def send_incident_app_failure_alert():
-    """
-
-    This helper performs the update or outbound action required by the current event-processing workflow.
-
-    Args:
-        None.
-
-    Returns:
-        The result returned by the underlying operation.
-
-    Side Effects:
-        May update the SL1 event, call an API, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the appropriate result when the action cannot complete.
-    """
     alert_data = build_alert_payload(
         message=(
             "Incident App Failure on EID:"
@@ -3164,22 +2180,6 @@ def send_incident_app_failure_alert():
 def build_event_data_from_remedy_response(
     remedy_response,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        remedy_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     ext_ticket_ref = str(
         remedy_response.ext_ticket_ref
     )
@@ -3240,22 +2240,6 @@ def build_event_data_from_remedy_response(
 def update_sl1_event(
     event_data,
 ):
-    """
-
-    This helper performs the update or outbound action required by the current event-processing workflow.
-
-    Args:
-        event_data: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The result returned by the underlying operation.
-
-    Side Effects:
-        May update the SL1 event, call an API, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the appropriate result when the action cannot complete.
-    """
     logger.info(
         "[EID:%s]: Updating ScienceLogic event",
         event_id,
@@ -3269,22 +2253,6 @@ def update_sl1_event(
 def is_sl1_event_update_successful(
     sl_update_response,
 ):
-    """
-
-    This helper evaluates the current event state and returns a simple boolean result used by the surrounding workflow.
-
-    Args:
-        sl_update_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        True when the condition is met, otherwise False.
-
-    Side Effects:
-        None.
-
-    Failure Behaviour:
-        The function uses the existing implementation and does not add extra exception handling.
-    """
     return (
         sl_update_response is not None
         and sl_update_response.status_code == 200
@@ -3294,23 +2262,6 @@ def log_sl1_event_update_failure(
     sl_update_response,
     remedy_response,
 ):
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        sl_update_response: The value supplied to this function by the current integration workflow.
-        remedy_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     logger.error(
         "[EID:%s]: Incident with incident "
         "number %s created in Remedy but "
@@ -3348,22 +2299,6 @@ def log_sl1_event_update_failure(
 def handle_remedy_create_response(
     remedy_response,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        remedy_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     stats["ext_ticket_ref"] = str(
         remedy_response.ext_ticket_ref
     )
@@ -3403,22 +2338,6 @@ def handle_remedy_create_response(
     return False
 
 def handle_create_ticket():
-    """
-
-    This function builds the create payload, applies any scenario-specific adjustments, sends the payload to the Remedy create operation, and then updates the SL1 event with the incident details returned by Remedy.
-
-    Args:
-        None.
-
-    Returns:
-        True when the ticket handling flow succeeded, otherwise False.
-
-    Side Effects:
-        Calls the scenario handlers, the Remedy create operation, and the SL1 event API; it also updates the global stats dictionary and writes log messages.
-
-    Failure Behaviour:
-        If the payload is marked non-ticketable, the function returns True after logging the decision. If the Remedy or SL1 calls fail, the function returns False.
-    """
     create_payload = build_create_payload()
 
     create_payload = scenarios_handling(
@@ -3458,22 +2377,6 @@ def handle_create_ticket():
     )
 
 def handle_update_ticket():
-    """
-
-    This function builds the update payload, sends it to the Remedy update operation, and returns whether the update was accepted by the service.
-
-    Args:
-        None.
-
-    Returns:
-        True when the update was accepted, otherwise False.
-
-    Side Effects:
-        Calls the Remedy update operation, updates the global stats dictionary, and writes log messages.
-
-    Failure Behaviour:
-        If the update payload is empty, the function returns True without calling the Remedy service.
-    """
     update_payload = build_update_payload()
 
     stats["ext_ticket_ref"] = str(
@@ -3514,22 +2417,6 @@ def handle_update_ticket():
 def ticket_handling(
     ticket_status=False,
 ):
-    """
-
-    This function decides whether the current action should create a new ticket or update an existing one and then routes the workflow through the appropriate handler.
-
-    Args:
-        ticket_status: The previous ticket status value to preserve in the function result.
-
-    Returns:
-        A dictionary containing the final ticket status and a result value.
-
-    Side Effects:
-        Calls the create or update handlers and writes log messages.
-
-    Failure Behaviour:
-        Any exception is caught, logged, and returned as part of the result dictionary.
-    """
     try:
         if is_create_ticket_action(
             EM7_VALUES["%n"]
@@ -3564,22 +2451,6 @@ def ticket_handling(
 def get_error_marker(
     user_note,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        user_note: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     error_match = re.search(
         r"\d-Error:\d+",
         str(user_note),
@@ -3593,22 +2464,6 @@ def get_error_marker(
 def get_error_marker(
     user_note,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        user_note: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     error_match = re.search(
         r"\d-Error:\d+",
         str(user_note),
@@ -3622,22 +2477,6 @@ def get_error_marker(
 def get_marker_timestamp(
     error_marker,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        error_marker: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     if not error_marker:
         return None
 
@@ -3650,22 +2489,6 @@ def get_marker_timestamp(
 def build_error_marker(
     retry_number,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        retry_number: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     return (
         str(retry_number)
         + "-Error:"
@@ -3675,22 +2498,6 @@ def build_error_marker(
 def build_first_error_user_note(
     user_note,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        user_note: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     error_marker = build_error_marker(
         retry_number=1
     )
@@ -3708,24 +2515,6 @@ def replace_error_marker(
     current_marker,
     next_retry_number,
 ):
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        user_note: The value supplied to this function by the current integration workflow.
-        current_marker: The value supplied to this function by the current integration workflow.
-        next_retry_number: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     next_marker = build_error_marker(
         retry_number=next_retry_number
     )
@@ -3750,22 +2539,6 @@ def replace_error_marker(
 def update_retry_user_note(
     updated_user_note,
 ):
-    """
-
-    This helper performs the update or outbound action required by the current event-processing workflow.
-
-    Args:
-        updated_user_note: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The result returned by the underlying operation.
-
-    Side Effects:
-        May update the SL1 event, call an API, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the appropriate result when the action cannot complete.
-    """
     event_data = {
         "user_note": str(
             updated_user_note
@@ -3816,23 +2589,6 @@ def register_first_ticket_failure(
     user_note,
     error_msg,
 ):
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        user_note: The value supplied to this function by the current integration workflow.
-        error_msg: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     updated_user_note = (
         build_first_error_user_note(
             user_note
@@ -3858,23 +2614,6 @@ def record_retry_waiting(
     retry_number,
     error_msg,
 ):
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        retry_number: The value supplied to this function by the current integration workflow.
-        error_msg: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     stats["ext_ticket_ref"] = (
         str(retry_number)
         + "-Error "
@@ -3891,22 +2630,6 @@ def record_retry_waiting(
 def retry_ticket_handling(
     ticket_status,
 ):
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        ticket_status: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     logger.info(
         "[EID:%s]: Retrying ticket handling",
         event_id,
@@ -3922,25 +2645,6 @@ def move_to_next_error_level(
     next_retry_number,
     error_msg,
 ):
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        user_note: The value supplied to this function by the current integration workflow.
-        current_marker: The value supplied to this function by the current integration workflow.
-        next_retry_number: The value supplied to this function by the current integration workflow.
-        error_msg: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     updated_user_note = (
         replace_error_marker(
             user_note=user_note,
@@ -3969,22 +2673,6 @@ def move_to_next_error_level(
     )
 
 def build_final_failure_event_data():
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        None.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     return {
         "user_ack": (
             "/api/account/"
@@ -3996,22 +2684,6 @@ def build_final_failure_event_data():
 def build_final_failure_alert(
     error_msg,
 ):
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        error_msg: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     return build_alert_payload(
         message=(
             "Remedy Ticket Creation Failed: "
@@ -4026,22 +2698,6 @@ def build_final_failure_alert(
 def send_final_failure_alert(
     error_msg,
 ):
-    """
-
-    This helper performs the update or outbound action required by the current event-processing workflow.
-
-    Args:
-        error_msg: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The result returned by the underlying operation.
-
-    Side Effects:
-        May update the SL1 event, call an API, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the appropriate result when the action cannot complete.
-    """
     alert_data = build_final_failure_alert(
         error_msg
     )
@@ -4074,22 +2730,6 @@ def send_final_failure_alert(
 def handle_final_ticket_failure(
     error_msg,
 ):
-    """
-
-    This function updates the SL1 event with the 6-Failure user note, updates the global statistics, and sends a final alert so the failure is visible in ScienceLogic.
-
-    Args:
-        error_msg: The error message that caused the final failure state.
-
-    Returns:
-        True when the SL1 event update succeeds, otherwise False.
-
-    Side Effects:
-        Updates the SL1 event, calls the SL1 alert API, and writes log messages.
-
-    Failure Behaviour:
-        If the SL1 update fails, the function logs the problem and returns False.
-    """
     event_data = (
         build_final_failure_event_data()
     )
@@ -4149,24 +2789,6 @@ def handle_existing_retry_failure(
     error_msg,
     ticket_status,
 ):
-    """
-
-    This function examines the current retry marker, checks whether the retry interval has elapsed, and either retries the ticket workflow or advances the event to the next retry level or final failure state.
-
-    Args:
-        user_note: The current user note containing the retry marker.
-        error_msg: The latest error message.
-        ticket_status: The previous ticket status from the retry flow.
-
-    Returns:
-        None.
-
-    Side Effects:
-        Updates the global stats dictionary, calls the retry workflow, and writes log messages.
-
-    Failure Behaviour:
-        If the marker cannot be parsed or the retry interval has not passed, the function records the waiting state or exits without advancing the retry level.
-    """
     error_marker = get_marker_timestamp(
         user_note
     )
@@ -4249,26 +2871,6 @@ def exception_handling(
     error_msg,
     ticket_status,
 ):
-    """
-
-    This function decides whether the current failure is the first one or part of an existing retry chain and then delegates to the appropriate retry or final-failure handling logic.
-
-    Args:
-        event_id: The current SL1 event identifier.
-        ext_ticket_ref: The external ticket reference from the current event.
-        user_note: The current user note from the SL1 event.
-        error_msg: The error message to record.
-        ticket_status: The current ticket processing status.
-
-    Returns:
-        None.
-
-    Side Effects:
-        Calls the retry and failure-handling functions and writes log messages.
-
-    Failure Behaviour:
-        Any unexpected exception is logged and the function does not raise it further.
-    """
     try:
         logger.info(
             "[EID:%s]: Entered "
@@ -4301,22 +2903,6 @@ def exception_handling(
 #********************************MIAN FUNCTIONALITY**************************************************
 
 def get_runbook_variables():
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        None.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     return {
         "event_id": event_id,
         "event_message": EM7_VALUES["%M"],
@@ -4362,22 +2948,6 @@ def get_runbook_variables():
     }
 
 def log_runbook_variables():
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        None.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     runbook_variables = (
         get_runbook_variables()
     )
@@ -4389,64 +2959,16 @@ def log_runbook_variables():
     )
 
 def get_event_message():
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        None.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     return str(
         EM7_VALUES["%M"]
     )
 
 def is_event_message_blank():
-    """
-
-    This helper evaluates the current event state and returns a simple boolean result used by the surrounding workflow.
-
-    Args:
-        None.
-
-    Returns:
-        True when the condition is met, otherwise False.
-
-    Side Effects:
-        None.
-
-    Failure Behaviour:
-        The function uses the existing implementation and does not add extra exception handling.
-    """
     event_message = get_event_message()
 
     return not event_message.strip()
 
 def build_blank_event_message_alert():
-    """
-
-    This helper prepares the data needed for the next step of the SL1 to Remedy processing flow.
-
-    Args:
-        None.
-
-    Returns:
-        The built value that the calling workflow uses next.
-
-    Side Effects:
-        May modify a payload dictionary or write a log entry depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the required input is missing.
-    """
     return {
         "force_ytype": "0",
         "force_yid": "0",
@@ -4473,22 +2995,6 @@ def build_blank_event_message_alert():
     }
 
 def handle_blank_event_message():
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        None.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.info(
         "[EID:%s]: Blank event message detected",
         event_id,
@@ -4524,22 +3030,6 @@ def handle_blank_event_message():
     return False
 
 def get_current_event_ticket_details():
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        None.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     return {
         "ext_ticket_ref": str(
             EM7_VALUES[
@@ -4554,22 +3044,6 @@ def get_current_event_ticket_details():
     }
 
 def run_ticket_process():
-    """
-
-    This helper triggers the service or API interaction needed to move the SL1 to Remedy workflow forward.
-
-    Args:
-        None.
-
-    Returns:
-        The result returned by the downstream operation.
-
-    Side Effects:
-        May call an API, a web service, or the SL1 database depending on the implementation.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     logger.info(
         "[EID:%s]: Starting ticket handling",
         event_id,
@@ -4591,22 +3065,6 @@ def run_ticket_process():
 def is_ticket_process_successful(
     ticket_response,
 ):
-    """
-
-    This helper evaluates the current event state and returns a simple boolean result used by the surrounding workflow.
-
-    Args:
-        ticket_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        True when the condition is met, otherwise False.
-
-    Side Effects:
-        None.
-
-    Failure Behaviour:
-        The function uses the existing implementation and does not add extra exception handling.
-    """
     return bool(
         ticket_response.get(
             "ticket_status",
@@ -4617,22 +3075,6 @@ def is_ticket_process_successful(
 def get_ticket_process_error(
     ticket_response,
 ):
-    """
-
-    This helper reads the relevant data from the current event, payload, or database context so the surrounding workflow can continue.
-
-    Args:
-        ticket_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The requested value for the calling workflow.
-
-    Side Effects:
-        May read event data, query the SL1 database, or access the current payload context.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the best available result when the expected value is not present.
-    """
     return ticket_response.get(
         "result",
         "Unknown ticket processing error",
@@ -4641,22 +3083,6 @@ def get_ticket_process_error(
 def handle_ticket_process_failure(
     ticket_response,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        ticket_response: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     event_ticket_details = (
         get_current_event_ticket_details()
     )
@@ -4695,22 +3121,6 @@ def handle_ticket_process_failure(
     )
 
 def update_final_stats():
-    """
-
-    This helper performs the update or outbound action required by the current event-processing workflow.
-
-    Args:
-        None.
-
-    Returns:
-        The result returned by the underlying operation.
-
-    Side Effects:
-        May update the SL1 event, call an API, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns the appropriate result when the action cannot complete.
-    """
     stats["AET"] = str(
         datetime.datetime.now()
     )
@@ -4725,22 +3135,6 @@ def update_final_stats():
         )
 
 def log_stats():
-    """
-
-    This helper supports the SL1 to Remedy workflow by carrying out the operation defined by the current function implementation.
-
-    Args:
-        None.
-
-    Returns:
-        The value returned by the current implementation.
-
-    Side Effects:
-        May write logs, update payload data, or touch the surrounding workflow state.
-
-    Failure Behaviour:
-        The function follows the existing implementation and uses the same failure behaviour already present in the code.
-    """
     logger.info(
         "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
         stats["EID"],
@@ -4759,22 +3153,6 @@ def log_stats():
 def handle_main_failure(
     error,
 ):
-    """
-
-    This helper applies the scenario or processing logic required by the current event and updates the payload or state as needed.
-
-    Args:
-        error: The value supplied to this function by the current integration workflow.
-
-    Returns:
-        The updated event payload or a boolean result depending on the implementation.
-
-    Side Effects:
-        May modify the current payload, update event state, or write log messages.
-
-    Failure Behaviour:
-        The function follows the existing implementation and returns False or a default result when the workflow should stop.
-    """
     logger.exception(
         "[EID:%s]: Unexpected main "
         "execution error: %s",
@@ -4803,22 +3181,6 @@ def handle_main_failure(
     )
 
 def process_event():
-    """
-
-    This function logs the Run Book Automation variables, runs the ticket workflow, checks whether the event message is blank, and handles any ticket-processing failure before returning the ticket response.
-
-    Args:
-        None.
-
-    Returns:
-        The dictionary returned by the ticket handling workflow.
-
-    Side Effects:
-        Calls the ticket workflow and alert handling functions, and writes log messages.
-
-    Failure Behaviour:
-        The function relies on the ticket-handling and exception-handling functions to manage errors.
-    """
     log_runbook_variables()
 
     ticket_response = run_ticket_process()
@@ -4836,22 +3198,6 @@ def process_event():
     return ticket_response
 
 def main():
-    """
-
-    This is the top-level orchestration function for the SL1 to Remedy integration. It starts the processing flow, handles unexpected errors, and finally updates the final statistics and log output.
-
-    Args:
-        None.
-
-    Returns:
-        None.
-
-    Side Effects:
-        Calls the processing workflow, updates the global stats dictionary, writes log messages, and finalizes the execution flow.
-
-    Failure Behaviour:
-        Any unexpected exception is caught and passed to the main failure handler so the workflow can still finish its final logging steps.
-    """
     try:
         logger.info(
             "[EID:%s]: Remedy integration started",
